@@ -148,6 +148,8 @@ async def create_model(request):
         if not isinstance(id, int):
             return common_sad_path
         model = await Model.get(id)
+        if model is None:
+            return common_sad_path
         ver = body["version"]
         if ver not in model.versions:
             await model.update(versions=(model.versions + [ver])).apply()
