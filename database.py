@@ -1,51 +1,49 @@
-from starlette.applications import Starlette
-from starlette.responses import JSONResponse
 import json
-import uvicorn
-import databases
-import sqlalchemy
 import asyncio
-from gino import Gino
+from harbor import models, db
+from starlette.config import Config
 
-# Database Management
 
-db = Gino()
-tables = ['models']
+async def db_connect():
+    harbor_config = Config('harbor.env')
+    DB_USER = harbor_config('DB_USER')
+    PASSWORD = harbor_config('PASSWORD')
+    DB_NAME = harbor_config('DB_NAME')
+    await db.set_bind('postgresql://{0}:{1}@localhost/{2}'.format(DB_USER, PASSWORD, DB_NAME))
 
-class Model(db.Model):
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{\n" + " id: {0},\n title: {1},\n desc: {2},\n versions: {3},\n category: {4},\n params: {5},\n views: {6},\n requests: {7}\n".format(self.id, self.title, self.desc, self.versions, self.category, self.params, self.views, self.requests) + "}"
-
-    __tablename__ = 'models'
-
-    id = db.Column(db.Integer(), primary_key=True)
-    title = db.Column(db.String())
-    desc = db.Column(db.String())
-    versions = db.Column(db.ARRAY(db.Float()))
-    category = db.Column(db.String())
-    params = db.Column(db.ARRAY(db.JSON()))
-    views = db.Column(db.Integer(), default=0)
-    requests = db.Column(db.Integer(), default=0)
-
-async def main():
-    await db.set_bind('postgresql://postgres:goshilovebugs@localhost/gino')
-    # await db.gino.drop(Model)
-    # print('model' in db.tables)
-    # print(db.gino.metadata) #, db.gino.metadata)
-    # print('model' in db.tables)
-    print(len(db.tables))
-    # await db.gino.create_all()
-    await Model.delete.gino.status()
-    # model = await Model.get(4)
-    # await model.delete()
-    # model = await Model.create(title="test", desc="test", versions=[1.0], category="test", params=[json.dumps({"test":"test"})])
-    model = await Model.query.gino.all()
-    print(model)
+async def db_disconnect():
     await db.pop_bind().close()
 
 
-asyncio.get_event_loop().run_until_complete(main())
+async def reset_tables(tables=None):
+    if tables is None:
+        await db.gino.drop_all()
+    else:
+        for table in tables:
+            assert table in db.tables, "Table {} not found.".format(table)
+        await db.gino.drop_all(tables=tables)
+    await db.gino.create_all()
+
+
+async def seed_tables():
+    with open('seed_data.json') as raw_seed_data:
+        seed_data = json.load(raw_seed_data)
+        for model in models:
+            for model_instance in seed_data[model]:
+                await models[model].create(
+                    title=model_instance["title"],
+                    desc=model_instance["desc"],
+                    versions=[model_instance["version"]],
+                    category=model_instance["category"],
+                    params=model_instance["params"]
+                )
+
+
+async def migration():
+    await db_connect()
+    await reset_tables()
+    await seed_tables()
+    await db_disconnect()
+
+asyncio.get_event_loop().run_until_complete(migration())

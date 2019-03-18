@@ -36,6 +36,10 @@ class Model(db.Model):
         return {"id": self.id, "title": self.title, "desc": self.desc, "versions": self.versions,
                 "category": self.category, "params": self.params, "views": self.views, "requests": self.requests}
 
+models = {
+    "models": Model
+}
+
 # Routing and Backend Logic
 
 app = Starlette()
@@ -56,8 +60,7 @@ async def startup():
     CLIPPER_URL = harbor_config('CLIPPER_URL')
 
     await db.set_bind('postgresql://{0}:{1}@localhost/{2}'.format(DB_USER, PASSWORD, DB_NAME))
-    if not len(db.tables):
-        await db.gino.create_all()
+    await db.gino.create_all(checkfirst=True)
 
     # user/pass may or may not be necessary, depending on OS
     # maybe should consider adding harbor user to postgreSQL as a prereq
@@ -89,7 +92,6 @@ async def get_models(request):
     else:
         models = await Model.query.gino.all()
     return JSONResponse({"models": [model.to_json() for model in models]})
-
 
 @app.route('/api/models/popular', methods=["GET"])
 async def get_popular(request):
@@ -125,7 +127,6 @@ async def query_clipper(request):
     # if they give us URL and image, do we need to load the image somehow?
     return JSONResponse({"URL": CLIPPER_URL})
 
-
 @app.route('/api/model/create', methods=["POST"])
 async def create_model(request):
     common_sad_path = PlainTextResponse("400 Bad Request\nRequired parameters not provided.", status_code=400)
@@ -142,7 +143,7 @@ async def create_model(request):
             if not isinstance(body['params'], list) or not all((isinstance(elem, dict) for elem in body['params'])):
                 return common_sad_path
             await Model.create(title=body["title"], desc=body["desc"], versions=[body["version"]],
-                         category=body["category"], params=body["params"])
+                            category=body["category"], params=body["params"])
     else:
         id = body["id"]
         if not isinstance(id, int):
