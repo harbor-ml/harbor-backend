@@ -5,16 +5,17 @@ from starlette.config import Config
 
 
 async def db_connect():
+    print("Connecting to database...")
     harbor_config = Config('harbor.env')
     DB_USER = harbor_config('DB_USER')
     PASSWORD = harbor_config('PASSWORD')
     DB_NAME = harbor_config('DB_NAME')
     await db.set_bind('postgresql://{0}:{1}@localhost/{2}'.format(DB_USER, PASSWORD, DB_NAME))
-
+    print("Connection made!")
 
 async def db_disconnect():
     await db.pop_bind().close()
-
+    print("Disconnected and finished!")
 
 async def reset_tables(tables=None):
     if tables is None:
@@ -24,7 +25,7 @@ async def reset_tables(tables=None):
             assert table in db.tables, "Table {} not found.".format(table)
         await db.gino.drop_all(tables=tables)
     await db.gino.create_all()
-
+    print("Tables reset!")
 
 async def seed_tables():
     with open('seed_data.json') as raw_seed_data:
@@ -38,7 +39,7 @@ async def seed_tables():
                     category=model_instance["category"],
                     params=model_instance["params"]
                 )
-
+    print("Seed data has been inserted.")
 
 async def migration():
     await db_connect()

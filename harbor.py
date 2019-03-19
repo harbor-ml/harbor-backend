@@ -1,5 +1,5 @@
 from starlette.applications import Starlette
-from starlette.responses import JSONResponse, PlainTextResponse
+from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from starlette.config import Config
 import json
 from uvicorn import run as uvi_run
@@ -73,7 +73,8 @@ async def shutdown():
 async def homepage(request):
     return PlainTextResponse("Hello, world!")
 
-@app.route('/api/models', methods=["GET"])
+@app.route('/models', methods=["GET"])
+@app.route('/models/', methods=["GET"])
 async def get_models(request):
     # name and category values assumed to be alphanumeric
     names = request.query_params['name'].split('+') if 'name' in request.query_params else []
@@ -93,7 +94,8 @@ async def get_models(request):
         models = await Model.query.gino.all()
     return JSONResponse({"models": [model.to_json() for model in models]})
 
-@app.route('/api/models/popular', methods=["GET"])
+@app.route('/models/popular', methods=["GET"])
+@app.route('/models/popular/', methods=["GET"])
 async def get_popular(request):
     # optional params start_rank and count
     count = int(request.query_params.get('count', 5))
@@ -102,12 +104,13 @@ async def get_popular(request):
     models = await Model.query.order_by(metric.desc()).offset(start_rank).limit(count).gino.all()
     return JSONResponse({"models": [model.to_json() for model in models]})
 
-@app.route('/api/model')
-@app.route('/api/model/')
+@app.route('/model')
+@app.route('/model/')
 async def forgot_id(request):
     return PlainTextResponse("404 Not Found\nMust provide model ID", status_code=404)
 
-@app.route('/api/model/{id}', methods=["GET"])
+@app.route('/model/{id}', methods=["GET"])
+@app.route('/model/{id}/', methods=["GET"])
 async def get_model(request):
     id = request.path_params["id"]
     if not id.isdigit():
@@ -117,7 +120,8 @@ async def get_model(request):
     await model.update(views=model.views + 1).apply()
     return JSONResponse({id: model.to_json() if model else None})
 
-@app.route('/api/query', methods=["POST"])
+@app.route('/query', methods=["POST"])
+@app.route('/query/', methods=["POST"])
 async def query_clipper(request):
     body = await request.json()
     if any([elem not in body for elem in ["id", "version", "query"]]):
@@ -127,7 +131,8 @@ async def query_clipper(request):
     # if they give us URL and image, do we need to load the image somehow?
     return JSONResponse({"URL": CLIPPER_URL})
 
-@app.route('/api/model/create', methods=["POST"])
+@app.route('/model/create', methods=["POST"])
+@app.route('/model/create/', methods=["POST"])
 async def create_model(request):
     common_sad_path = PlainTextResponse("400 Bad Request\nRequired parameters not provided.", status_code=400)
     try:
