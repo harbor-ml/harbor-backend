@@ -117,6 +117,8 @@ async def get_model(request):
         return PlainTextResponse("400 Bad Request\nMust provide integer ID.", status_code=400)
     id = int(id)
     model = await Model.get(id)
+    if model is None:
+        return PlainTextResponse("400 Bad Request\nModel with given ID not found", status_code=400)
     await model.update(views=model.views + 1).apply()
     return JSONResponse({id: model.to_json() if model else None})
 
