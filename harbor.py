@@ -102,15 +102,17 @@ async def get_popular(request):
     start_rank = int(request.query_params.get('start_rank', 0))
     metric = Model.views if request.query_params.get('metric', '') == 'views' else Model.requests
     models = await Model.query.order_by(metric.desc()).offset(start_rank).limit(count).gino.all()
-    return JSONResponse({"models": [model.to_json() for model in models]})
+    return JSONResponse({"models": [model.to_json() for model in models]},
+                         headers = {"Access-Control-Allow-Headers": "*",
+                                    "Access-Control-Allow-Origin": "*"})
 
 @app.route('/model')
 @app.route('/model/')
 async def forgot_id(request):
     return PlainTextResponse("404 Not Found\nMust provide model ID", status_code=404)
 
-@app.route('/model/{id}', methods=["GET"])
-@app.route('/model/{id}/', methods=["GET"])
+@app.route('/model/{id}') #, methods=["GET"])
+@app.route('/model/{id}/') #, methods=["GET"])
 async def get_model(request):
     id = request.path_params["id"]
     if not id.isdigit():
@@ -122,8 +124,8 @@ async def get_model(request):
     await model.update(views=model.views + 1).apply()
     return JSONResponse({id: model.to_json() if model else None})
 
-@app.route('/query', methods=["POST"])
-@app.route('/query/', methods=["POST"])
+@app.route('/query') #, methods=["POST"])
+@app.route('/query/') #, methods=["POST"])
 async def query_clipper(request):
     body = await request.json()
     if any([elem not in body for elem in ["id", "version", "query"]]):
@@ -133,8 +135,8 @@ async def query_clipper(request):
     # if they give us URL and image, do we need to load the image somehow?
     return JSONResponse({"URL": CLIPPER_URL})
 
-@app.route('/model/create', methods=["POST"])
-@app.route('/model/create/', methods=["POST"])
+@app.route('/model/create') #, methods=["POST"])
+@app.route('/model/create/') #, methods=["POST"])
 async def create_model(request):
     common_sad_path = PlainTextResponse("400 Bad Request\nRequired parameters not provided.", status_code=400)
     try:
