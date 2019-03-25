@@ -1,4 +1,5 @@
 from starlette.applications import Starlette
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from starlette.config import Config
 import json
@@ -43,6 +44,7 @@ models = {
 # Routing and Backend Logic
 
 app = Starlette()
+app.add_middleware(CORSMiddleware, allow_origins=['*'])
 CLIPPER_URL = None
 
 @app.on_event("startup")
@@ -109,8 +111,8 @@ async def get_popular(request):
 async def forgot_id(request):
     return PlainTextResponse("404 Not Found\nMust provide model ID", status_code=404)
 
-@app.route('/model/{id}', methods=["GET"])
-@app.route('/model/{id}/', methods=["GET"])
+@app.route('/model/{id:int}', methods=["GET"])
+@app.route('/model/{id:int}/', methods=["GET"])
 async def get_model(request):
     id = request.path_params["id"]
     if not id.isdigit():
@@ -126,6 +128,7 @@ async def get_model(request):
 @app.route('/query/', methods=["POST"])
 async def query_clipper(request):
     body = await request.json()
+    print(body)
     if any([elem not in body for elem in ["id", "version", "query"]]):
         return PlainTextResponse("400 Bad Request\nIncomplete query provided.")
     # will we need to query admin address of clipper to set version?
