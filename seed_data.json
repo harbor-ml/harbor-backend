@@ -4,16 +4,20 @@
             {
                 "title": "vision classification model",
                 "desc": "dummy vision entry",
-                "category": "discriminative",
-                "params": [{"paramName": "url",
-    		                "paramType": "String"
-    		                }],
+                "category": "Vision Classification",
+                "params": [{
+                  "paramName": "url",
+    		          "paramType": "String"
+    		         }, {
+                  "paramName": "img",
+                  "paramType": "data"
+                  }],
                 "version": 1.0
             },
             {
                 "title": "vision detection model",
                 "desc": "dummy vision entry",
-                "category": "discriminative",
+                "category": "Vision Detection",
                 "params": [{"paramName": "url",
     		                "paramType": "String"
     		                }],
@@ -22,7 +26,7 @@
             {
                 "title": "wavenet",
                 "desc": "dummy wavenet entry",
-                "category": "generative",
+                "category": "Audio Generation",
                 "params": [{"paramName": "url",
     		                "paramType": "String"
     		                }],
@@ -31,7 +35,7 @@
             {
                 "title": "pix2pix model",
                 "desc": "pix2pix entry",
-                "category": "generative",
+                "category": "Image Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
                           }],
@@ -40,7 +44,7 @@
             {
                 "title": "text generation model",
                 "desc": "text generation entry",
-                "category": "generative",
+                "category": "Text Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
                           }],
