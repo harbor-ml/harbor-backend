@@ -5,7 +5,6 @@
 - Gino
 - Uvicorn
 
-<<<<<<< HEAD
 ## Instructions for setting up locally:
 Download gino, uvicorn, and postgresql <br/>
 Pull from harbor-backend repo
