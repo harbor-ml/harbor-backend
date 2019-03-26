@@ -2,48 +2,85 @@
     "models":
         [
             {
-                "title": "vision classification model",
-                "desc": "dummy vision entry",
-                "category": "discriminative",
-                "params": [{"paramName": "url",
-    		                "paramType": "String"
-    		                }],
+                "title": "Resnet 50",
+                "clipper_model_name": "resnet50-image-classification-keras",
+                "desc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. Sent from the client. Returns:  A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
+                "category": "Vision Classification",
+                "params": [{
+                  "paramName": "img",
+                  "paramType": "data"
+                  }],
+                "output_type": "list_tups",
+                "output_attr": {
+                  "output_render": "table",
+                  "table_width": "3",
+                  "table_columns": ["class_name", "class_description", "score"]
+                },
                 "version": 1.0
             },
             {
-                "title": "vision detection model",
-                "desc": "dummy vision entry",
-                "category": "discriminative",
-                "params": [{"paramName": "url",
-    		                "paramType": "String"
-    		                }],
+                "title": "Inception V3",
+                "clipper_model_name": "inceptionv3-image-classification-keras",
+                "desc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. Sent from the client. Returns: A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
+                "category": "Vision Classification",
+                "params": [{
+                  "paramName": "img",
+    		          "paramType": "data"
+    		        }],
+                "output_type": "list_tups",
+                "output_attr": {
+                  "output_render": "table",
+                  "table_width": "3",
+                  "table_columns": ["class_name", "class_description", "score"]
+                },
                 "version": 1.0
             },
             {
-                "title": "wavenet",
-                "desc": "dummy wavenet entry",
-                "category": "generative",
+                "title": "SSD Mobilenet",
+                "clipper_model_name": "ssd-mobilenet-object-detection-tf",
+                "desc": "The server will only return *useful* predicted boxes. Aka max suppression done on server, not client. Current limit is set to score > 0.5 and max 20 boxes. Accepts: An array of byte-oriented strings that represent each image. Sent from the client. Returns: A list of object lists. Each item in an object list is a tuple of the form: `(class_name, class_description, score, left, bottom, right, top) ",
+                "category": "Vision Detection",
                 "params": [{"paramName": "url",
     		                "paramType": "String"
     		                }],
+                "output_type": "list_tups",
+                "output_attr": {
+                  "output_render": "table",
+                  "table_width": "3",
+                  "table_columns": ["class_name", "class_description", "score"]
+                },
                 "version": 1.0
             },
             {
                 "title": "pix2pix model",
+                "clipper_model_name": "dummy-model-name",
                 "desc": "pix2pix entry",
-                "category": "generative",
+                "category": "Image Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
                           }],
+                "output_type": "list_tups",
+                "output_attr": {
+                  "output_render": "table",
+                  "table_width": "3",
+                  "table_columns": ["class_name", "class_description", "score"]
+                },
                 "version": 1.0
             },
             {
                 "title": "text generation model",
+                "clipper_model_name": "dummy-model-name",
                 "desc": "text generation entry",
-                "category": "generative",
+                "category": "Text Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
                           }],
+                "output_type": "list_tups",
+                "output_attr": {
+                  "output_render": "table",
+                  "table_width": "3",
+                  "table_columns": ["class_name", "class_description", "score"]
+                },
                 "version": 1.0
             }
         ]

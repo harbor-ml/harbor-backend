@@ -1,7 +1,9 @@
 from starlette.applications import Starlette
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from starlette.config import Config
 import json
+import requests
 from uvicorn import run as uvi_run
 from gino import Gino
 from sqlalchemy import and_
@@ -31,9 +33,13 @@ class Model(db.Model):
     params = db.Column(db.ARRAY(db.JSON()))
     views = db.Column(db.Integer(), default=0)
     requests = db.Column(db.Integer(), default=0)
+    output_type = db.Column(db.String())
+    output_attr = db.Column(db.JSON())
+    clipper_model_name = db.Column(db.String())
 
     def to_json(self):
         return {"id": self.id, "title": self.title, "desc": self.desc, "versions": self.versions,
+                "output_type": self.output_type, "clipper_model_name": self.clipper_model_name, "output_attr": self.output_attr,
                 "category": self.category, "params": self.params, "views": self.views, "requests": self.requests}
 
 models = {
@@ -43,6 +49,7 @@ models = {
 # Routing and Backend Logic
 
 app = Starlette()
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=["*"], allow_headers=["*"])
 CLIPPER_URL = None
 
 @app.on_event("startup")
@@ -102,21 +109,19 @@ async def get_popular(request):
     start_rank = int(request.query_params.get('start_rank', 0))
     metric = Model.views if request.query_params.get('metric', '') == 'views' else Model.requests
     models = await Model.query.order_by(metric.desc()).offset(start_rank).limit(count).gino.all()
-    return JSONResponse({"models": [model.to_json() for model in models]},
-                         headers = {"Access-Control-Allow-Headers": "*",
-                                    "Access-Control-Allow-Origin": "*"})
+    return JSONResponse({"models": [model.to_json() for model in models]})
 
 @app.route('/model')
 @app.route('/model/')
 async def forgot_id(request):
     return PlainTextResponse("404 Not Found\nMust provide model ID", status_code=404)
 
-@app.route('/model/{id}') #, methods=["GET"])
-@app.route('/model/{id}/') #, methods=["GET"])
+@app.route('/model/{id:int}', methods=["GET"])
+@app.route('/model/{id:int}/', methods=["GET"])
 async def get_model(request):
     id = request.path_params["id"]
-    if not id.isdigit():
-        return PlainTextResponse("400 Bad Request\nMust provide integer ID.", status_code=400)
+    # if not id.isdigit():
+    #     return PlainTextResponse("400 Bad Request\nMust provide integer ID.", status_code=400)
     id = int(id)
     model = await Model.get(id)
     if model is None:
@@ -124,19 +129,47 @@ async def get_model(request):
     await model.update(views=model.views + 1).apply()
     return JSONResponse({id: model.to_json() if model else None})
 
-@app.route('/query') #, methods=["POST"])
-@app.route('/query/') #, methods=["POST"])
+@app.route('/query', methods=["POST", "OPTIONS"])
+@app.route('/query/', methods=["POST", "OPTIONS"])
 async def query_clipper(request):
     body = await request.json()
+    # print(body)
     if any([elem not in body for elem in ["id", "version", "query"]]):
         return PlainTextResponse("400 Bad Request\nIncomplete query provided.")
     # will we need to query admin address of clipper to set version?
     # are there different query addresses for different models?
     # if they give us URL and image, do we need to load the image somehow?
-    return JSONResponse({"URL": CLIPPER_URL})
 
-@app.route('/model/create') #, methods=["POST"])
-@app.route('/model/create/') #, methods=["POST"])
+    # Front-End Work done here:
+    id = int(body["id"])
+    query = body["query"]
+    model = await Model.get(id)
+    if model is None:
+        return PlainTextResponse("400 Bad Request\nModel with given ID not found", status_code=400)
+    await model.update(requests=model.requests + 1).apply()
+
+    # Accessing Clipper
+    addr = "http://18.213.175.138:1337/%s/predict" % (model.clipper_model_name)
+    req_headers = {"Content-Type": "application/json"}
+    req_json = json.dumps(query)
+    try:
+        clipperResponse = requests.post(addr, headers=req_headers, data=req_json).json()
+    except:
+        return JSONResponse({
+            "error": "clipper returned an error",
+            "req_json": req_json
+        })
+
+    # return JSONResponse({"garbage": "garbage"});
+    return JSONResponse({
+        "model": model.to_json() if model else None,
+        "req_json": req_json,
+        "url": addr,
+        "data": clipperResponse
+    })
+
+@app.route('/model/create', methods=["POST"])
+@app.route('/model/create/', methods=["POST"])
 async def create_model(request):
     common_sad_path = PlainTextResponse("400 Bad Request\nRequired parameters not provided.", status_code=400)
     try:
@@ -146,13 +179,13 @@ async def create_model(request):
     if "version" not in body or not isinstance(body["version"], float):
         return common_sad_path
     if "id" not in body:
-        if any([elem not in body for elem in ["title", "desc", "category", "params"]]):
+        if any([elem not in body for elem in ["title", "desc", "category", "params", "clipper_model_name", "output_type"]]):
             return common_sad_path
         else:
             if not isinstance(body['params'], list) or not all((isinstance(elem, dict) for elem in body['params'])):
                 return common_sad_path
-            await Model.create(title=body["title"], desc=body["desc"], versions=[body["version"]],
-                            category=body["category"], params=body["params"])
+            await Model.create(title=body["title"], desc=body["desc"], versions=[body["version"]], clipper_model_name=body["clipper_model_name"], output_attr=["output_attr"],
+                            category=body["category"], params=body["params"], output_type=body["output_type"])
     else:
         id = body["id"]
         if not isinstance(id, int):
@@ -175,3 +208,4 @@ def string_is_float(num):
 
 if __name__ == '__main__':
     uvi_run(app, host='0.0.0.0', port=8000)
+
