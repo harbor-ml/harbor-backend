@@ -208,4 +208,3 @@ def string_is_float(num):
 
 if __name__ == '__main__':
     uvi_run(app, host='0.0.0.0', port=8000)
-
