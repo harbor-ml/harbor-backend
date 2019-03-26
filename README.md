@@ -35,8 +35,6 @@ Now in the regular terminal:
 <br/><br/>
 :)
 
-=======
->>>>>>> 90ab98bef9c63f8a982da97dbcd54a6e0b08693e
 ## Deployment Instruction (the same is true for frontend/just different pem/ip):
 - `sudo chmod 400 harbor-frontend-pem.txt`
 - `ssh -i harbor-frontend.pem.txt ubuntu@{IP_ADDRESS}`
