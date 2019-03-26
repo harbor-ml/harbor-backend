@@ -1,6 +1,5 @@
 .idea/
 *.txt
 __pycache__/
-
 *.pem
 public_server.env
