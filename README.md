@@ -1,4 +1,4 @@
-### Harbor Backend
+# Harbor Backend
 
 ## Technology:
 - Starlette.io
@@ -14,11 +14,11 @@ Do following commands to change postgres user password:
 2. enter password
 
 Now you should be in the postgres command prompt. Follow below:
-1. `createdb {DB_NAME}``
+1. `createdb {DB_NAME}`
 1. `psql`
 
 You should now be at the postgres=# prompt. Follow below:
-1. `ALTER USER postgres with password {some password}``
+1. `ALTER USER postgres with password {some password}`
 2. `\q`
 
 (If you think that didn't work, then consider doing next:)
