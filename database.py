@@ -39,8 +39,8 @@ async def seed_tables():
                     category=model_instance["category"],
                     params=model_instance["params"],
                     output_type=model_instance["output_type"],
-                    clipper_model_name=model_instance["clipper_model_name"],
-                    output_attr=model_instance["output_attr"]
+                    output_attr=model_instance["output_attr"],
+                    clipper_model_name=model_instance["clipper_model_name"]
                 )
     print("Seed data has been inserted.")
 

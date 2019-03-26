@@ -39,9 +39,8 @@ class Model(db.Model):
 
     def to_json(self):
         return {"id": self.id, "title": self.title, "desc": self.desc, "versions": self.versions,
-                "output_type": self.output_type, "clipper_model_name": self.clipper_model_name,
-                "output_attr": self.output_attr, "category": self.category,
-                "params": self.params, "views": self.views, "requests": self.requests}
+                "output_type": self.output_type, "clipper_model_name": self.clipper_model_name, "output_attr": self.output_attr,
+                "category": self.category, "params": self.params, "views": self.views, "requests": self.requests}
 
 models = {
     "models": Model
@@ -185,8 +184,7 @@ async def create_model(request):
         else:
             if not isinstance(body['params'], list) or not all((isinstance(elem, dict) for elem in body['params'])):
                 return common_sad_path
-            await Model.create(title=body["title"], desc=body["desc"], versions=[body["version"]],
-                            clipper_model_name=body["clipper_model_name"], output_attr=body["output_attr"],
+            await Model.create(title=body["title"], desc=body["desc"], versions=[body["version"]], clipper_model_name=body["clipper_model_name"], output_attr=["output_attr"],
                             category=body["category"], params=body["params"], output_type=body["output_type"])
     else:
         id = body["id"]
