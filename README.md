@@ -40,8 +40,9 @@ Now in the regular terminal:
 - `ssh -i harbor-frontend.pem.txt ubuntu@{IP_ADDRESS}`
 - `tmux` or `tmux attach-session -t {id_of_session}`
 - `git pull origin master` just in case you want to get updated code
-- `npm run build`
-- `serve -s build`
+- `python3 database.py` NOTE: run this script only if you want to seed data
+- `python3 harbor.py`
+- Let server run and follow next command
 - `Ctrl+b` release `d`
-- `Ctrl+C` for killing the server on tmux session
+- DO NOT USE UNLESS NECESSARY: `Ctrl+C` for killing the server on tmux session
 - Super good resource: https://linuxize.com/post/getting-started-with-tmux/
