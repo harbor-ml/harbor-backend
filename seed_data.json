@@ -77,7 +77,7 @@
                 "desc": "Long Short Term Memory Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset.",
                 "hdesc": "Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative.’",
                 "category": "Text Generation",
-                "params": [{"paramName": "url",
+                "params": [{"paramName": "input",
                            "paramType": "String"
                           }],
                 "output_type": "String",
