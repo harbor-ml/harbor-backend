@@ -4,7 +4,8 @@
             {
                 "title": "Resnet 50",
                 "clipper_model_name": "resnet50-image-classification-keras",
-                "desc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. Sent from the client. We only accept jpegs. Returns:  A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
+                "desc": "This model is a Neural Network that accepts images, and tries to predict the object that the image depicts - for example, if you were to send a picture of a cat, it might return different types of cats, or, if the image is difficult, different types of animals.",
+		"hdesc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. We only acccept jpegs. Sent from the client. Returns:  A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
                 "category": "Vision Classification",
                 "params": [{
                   "paramName": "img",
@@ -21,7 +22,8 @@
             {
                 "title": "Inception V3",
                 "clipper_model_name": "inceptionv3-image-classification-keras",
-                "desc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. We only accept jpegs.Sent from the client. Returns: A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
+                "desc": "This model is a Neural Network that accepts images, and tries to predict the object that the image depicts - for example, if you were to send a picture of a cat, it might return different types of cats, or, if the image is difficult, different types of animals.",
+		"hdesc": "Accepts: An array of byte-oriented strings (64 base encoded) that represent each image. We only accept jpegs. Sent from the client. Returns: A list of lists of top class prediction tuples '(class_name, class_description, score)'. One list of tuples per sample in batch input.",
                 "category": "Vision Classification",
                 "params": [{
                   "paramName": "img",
@@ -38,7 +40,8 @@
             {
                 "title": "SSD Mobilenet",
                 "clipper_model_name": "ssd-mobilenet-object-detection-tf",
-                "desc": "The server will only return *useful* predicted boxes. Aka max suppression done on server, not client. Current limit is set to score > 0.5 and max 20 boxes. Accepts: An array of byte-oriented strings that represent each image. We only accept jpegs.  Sent from the client. Returns: A list of object lists. Each item in an object list is a tuple of the form: `(class_name, class_description, score, left, bottom, right, top) ",
+                "desc": "This model is a Neural Network that accepts images, predicts what objects, such as humans, dogs, bikes, etc., are in the image, and draws boxes around each object it can find and classify within the image. Coming Soon!",
+		"hdesc": "The server will only return *useful* predicted boxes. Aka max suppression done on server, not client. Current limit is set to score > 0.5 and max 20 boxes. Accepts: An array of byte-oriented strings that represent each image. We only accept jpegs. Sent from the client. Returns: A list of object lists. Each item in an object list is a tuple of the form: `(class_name, class_description, score, left, bottom, right, top) ",
                 "category": "Vision Detection",
                 "params": [{"paramName": "url",
     		                "paramType": "String"
@@ -54,7 +57,8 @@
             {
                 "title": "pix2pix model",
                 "clipper_model_name": "dummy-model-name",
-                "desc": "pix2pix entry",
+                "desc": "Coming Soon!",
+		"hdesc": "pix2pix entry",
                 "category": "Image Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
@@ -70,12 +74,13 @@
             {
                 "title": "Sentiment Classification Model",
                 "clipper_model_name": "imdb-lstm-keras",
-                "desc": "Long Short Term Memory Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset. Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative’",
+                "desc": "Long Short Term Memory Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset.",
+                "hdesc": "Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative.’",
                 "category": "Text Generation",
                 "params": [{"paramName": "url",
                            "paramType": "String"
                           }],
-                "output_type": "list_tups",
+                "output_type": "String",
                 "output_attr": {
                   "output_render": "table",
                   "table_width": "3",
