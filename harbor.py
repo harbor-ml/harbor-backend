@@ -1,3 +1,5 @@
+import imghdr
+
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
@@ -135,10 +137,7 @@ async def query_clipper(request):
     body = await request.json()
     # print(body)
     if any([elem not in body for elem in ["id", "version", "query"]]):
-        return PlainTextResponse("400 Bad Request\nIncomplete query provided.")
-    # will we need to query admin address of clipper to set version?
-    # are there different query addresses for different models?
-    # if they give us URL and image, do we need to load the image somehow?
+        return PlainTextResponse("400 Bad Request\nIncomplete query provided.", status_code=400)
 
     # Front-End Work done here:
     id = int(body["id"])
@@ -147,6 +146,13 @@ async def query_clipper(request):
     if model is None:
         return PlainTextResponse("400 Bad Request\nModel with given ID not found", status_code=400)
     await model.update(requests=model.requests + 1).apply()
+
+    # Image verification
+    # Think of cleaner way to do this -- verifications will be necessary for many models, some of which are from users.
+    # In the future, maybe devise a scheme for indicating which models need certain params to be verified
+    if 'img' in query:
+        if imghdr.what(h=query['img']) != 'jpeg':
+            return PlainTextResponse("400 Bad Request\nModel only accepts JPEG images.", status_code=400)
 
     # Accessing Clipper
     addr = "http://18.213.175.138:1337/%s/predict" % (model.clipper_model_name)
