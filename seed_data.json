@@ -73,11 +73,11 @@
             },
             {
                 "title": "Sentiment Classification Model",
-                "clipper_model_name": "imdb-lstm-keras",
-                "desc": "Long Short Term Memory Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset.",
+                "clipper_model_name": "imdb-cnn-keras",
+                "desc": "Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset. Given a movie review string, the model will return whether the review is positive or negative.",
                 "hdesc": "Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative.’",
                 "category": "Text Generation",
-                "params": [{"paramName": "input",
+                "params": [{"paramName": "review",
                            "paramType": "String"
                           }],
                 "output_type": "string",
