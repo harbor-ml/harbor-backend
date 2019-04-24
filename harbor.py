@@ -1,5 +1,4 @@
 import imghdr
-
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
