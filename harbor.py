@@ -1,4 +1,3 @@
-import imghdr
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, RedirectResponse
@@ -149,9 +148,7 @@ async def query_clipper(request):
     # Image verification
     # Think of cleaner way to do this -- verifications will be necessary for many models, some of which are from users.
     # In the future, maybe devise a scheme for indicating which models need certain params to be verified
-    if 'img' in query:
-        if imghdr.what(h=query['img']) != 'jpeg':
-            return PlainTextResponse("400 Bad Request\nModel only accepts JPEG images.", status_code=400)
+    # implement later after meeting with frontend
 
     # Accessing Clipper
     addr = "http://18.213.175.138:1337/%s/predict" % (model.clipper_model_name)
