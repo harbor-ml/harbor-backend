@@ -80,7 +80,7 @@
                 "params": [{"paramName": "input",
                            "paramType": "String"
                           }],
-                "output_type": "String",
+                "output_type": "string",
                 "output_attr": {
                   "output_render": "table",
                   "table_width": "3",
