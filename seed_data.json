@@ -78,9 +78,9 @@
                 "hdesc": "Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative.’",
                 "category": "Text Generation",
                 "params": [{"paramName": "url",
-                           "paramType": "String"
+                           "paramType": "string"
                           }],
-                "output_type": "String",
+                "output_type": "string",
                 "output_attr": {
                   "output_render": "table",
                   "table_width": "3",
