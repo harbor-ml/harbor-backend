@@ -7,6 +7,7 @@ import requests
 from uvicorn import run as uvi_run
 from gino import Gino
 from sqlalchemy import and_
+import subprocess
 
 # Database Management
 
@@ -50,7 +51,7 @@ models = {
 
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=["*"], allow_headers=["*"])
-CLIPPER_URL = None
+CLIPPER_URL, KEY, MODEL_USER, MODEL_IP = [None] * 4
 
 @app.on_event("startup")
 async def startup():
@@ -63,8 +64,11 @@ async def startup():
     PASSWORD = harbor_config('PASSWORD')
     DB_NAME = harbor_config('DB_NAME')
 
-    global CLIPPER_URL
+    global CLIPPER_URL, KEY, MODEL_USER, MODEL_IP
     CLIPPER_URL = harbor_config('CLIPPER_URL')
+    KEY = harbor_config('KEY')
+    MODEL_USER = harbor_config('MODEL_USER')
+    MODEL_IP = harbor_config('MODEL_IP')
 
     await db.set_bind('postgresql://{0}:{1}@localhost/{2}'.format(DB_USER, PASSWORD, DB_NAME))
     await db.gino.create_all(checkfirst=True)
@@ -154,15 +158,15 @@ async def query_clipper(request):
     addr = "http://18.213.175.138:1337/%s/predict" % (model.clipper_model_name)
     req_headers = {"Content-Type": "application/json"}
     req_json = json.dumps(query)
+    error_path = lambda reason: JSONResponse({"error": reason, "req_json": req_json})
     try:
         clipperResponse = requests.post(addr, headers=req_headers, data=req_json).json()
+        if clipperResponse.get("default", False):
+            subprocess.run("ssh -i {0} {1}@{2} \"serve\"".format(KEY, MODEL_USER, MODEL_IP).split())
+            return error_path("Invalid input.")
     except:
-        return JSONResponse({
-            "error": "clipper returned an error",
-            "req_json": req_json
-        })
+        return error_path("Clipper returned an error.")
 
-    # return JSONResponse({"garbage": "garbage"});
     return JSONResponse({
         "model": model.to_json() if model else None,
         "req_json": req_json,
