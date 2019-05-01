@@ -40,11 +40,11 @@
             {
                 "title": "SSD Mobilenet",
                 "clipper_model_name": "ssd-mobilenet-object-detection-tf",
-                "desc": "This model is a Neural Network that accepts images, predicts what objects, such as humans, dogs, bikes, etc., are in the image, and draws boxes around each object it can find and classify within the image. Coming Soon!",
-		"hdesc": "The server will only return *useful* predicted boxes. Aka max suppression done on server, not client. Current limit is set to score > 0.5 and max 20 boxes. Accepts: An array of byte-oriented strings that represent each image. We only accept jpegs. Sent from the client. Returns: A list of object lists. Each item in an object list is a tuple of the form: `(class_name, class_description, score, left, bottom, right, top) ",
+                "desc": "This model is a Neural Network that accepts images, predicts what objects, such as humans, dogs, bikes, etc., are in the image, and draws boxes around each object it can find and classify within the image. The server will only return *useful* predicted boxes. Aka max suppression done on server, not client. Current limit is set to score > 0.5 and max 20 boxes.",
+		"hdesc": "Accepts: An array of byte-oriented strings that represent each image. We only accept jpegs. Sent from the client. Returns: A list of object lists. Each item in an object list is a tuple of the form: `(class_name, class_description, score, left, bottom, right, top). The coordinates returned may be floats instead of integers. ",
                 "category": "Vision Detection",
-                "params": [{"paramName": "url",
-    		                "paramType": "String"
+                "params": [{"paramName": "img",
+    		                "paramType": "data"
     		                }],
                 "output_type": "list_tups",
                 "output_attr": {
@@ -74,7 +74,7 @@
             {
                 "title": "Sentiment Classification Model",
                 "clipper_model_name": "imdb-cnn-keras",
-                "desc": "Convolutional Neural Net trained on the IMDb Sentiment Classification Dataset. Given a movie review string, the model will return whether the review is positive or negative",
+                "desc": "Convolutional Neural Net trained on the IMDB Sentiment Classification Dataset. Given a movie review string, the model will return whether the review is positive or negative.",
                 "hdesc": "Accepts: An array of strings and Returns: A classification string of ‘Positive’ or ‘Negative.’",
                 "category": "Text Generation",
                 "params": [{"paramName": "review",
